@@ -17,12 +17,6 @@ export function setToken(token){
     else delete api.defaults.headers.common.Authorization;
 }
 
-export async function createItem(payload) {
-    // payload: { title, type, year?, author?, description?, tags: string[] }
-    const { data } = await api.post('/items', payload);
-    return data;
-}
-
 export async function getItem(id) {
     const { data } = await api.get(`/items/${id}`);
     return data.data;
@@ -37,4 +31,29 @@ export async function updateItem(id, payload) {
 
 export async function deleteItem(id) {
     await api.delete(`/items/${id}`);
+}
+
+export async function toggleFavorite(itemId, isFavorite) {
+    const token = localStorage.getItem("token");
+    const url = `http://localhost:8000/api/items/${itemId}/favorite`;
+
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+    };
+
+    if (isFavorite) {
+        await axios.delete(url, config);
+    } else {
+        await axios.post(url, {}, config);
+    }
+}
+
+export async function fetchFavorites() {
+    const token = localStorage.getItem("token");
+    const res = await axios.get("http://localhost:8000/api/me/favorites", {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+    });
+    return res.data.data;
 }

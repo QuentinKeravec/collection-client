@@ -89,7 +89,7 @@ export default function NewItemPage(){
                 <div>
                     <label className="block text-sm mb-1">Titre *</label>
                     <input
-                        className="w-full border rounded px-3 py-2"
+                        className="input input-bordered w-full px-3 py-2"
                         name="title"
                         value={form.title}
                         onChange={onChange}
@@ -122,7 +122,7 @@ export default function NewItemPage(){
                             type="number"
                             min="1800"
                             max="2100"
-                            className="w-full border rounded px-3 py-2"
+                            className="input input-bordered w-full px-3 py-2"
                             name="year"
                             value={form.year}
                             onChange={onChange}
@@ -132,7 +132,7 @@ export default function NewItemPage(){
                     <div>
                         <label className="block text-sm mb-1">Auteur / Réalisateur</label>
                         <input
-                            className="w-full border rounded px-3 py-2"
+                            className="input input-bordered w-full px-3 py-2"
                             name="author"
                             value={form.author}
                             onChange={onChange}
@@ -144,7 +144,7 @@ export default function NewItemPage(){
                 <div>
                     <label className="block text-sm mb-1">Description</label>
                     <textarea
-                        className="w-full border rounded px-3 py-2"
+                        className="textarea textarea-bordered w-full px-3 py-2"
                         rows={4}
                         name="description"
                         value={form.description}
@@ -156,7 +156,7 @@ export default function NewItemPage(){
                 <div>
                     <label className="block text-sm mb-1">Tags (séparés par des virgules)</label>
                     <input
-                        className="w-full border rounded px-3 py-2"
+                        className="input input-bordered w-full px-3 py-2"
                         name="tags"
                         value={form.tags}
                         onChange={onChange}
@@ -164,13 +164,8 @@ export default function NewItemPage(){
                     />
                 </div>
 
-                <div className="pt-2">
-                    <button
-                        className={`btn px-4 py-2 rounded text-white ${loading ? "bg-gray-400" : "bg-neutral"}`}
-                        disabled={loading}
-                    >
-                        {loading ? "Ajout…" : "Ajouter"}
-                    </button>
+                <div className="card-actions justify-end mt-4">
+                    <button className={`btn btn-primary ${loading && "btn-disabled"}`}>{loading ? "Ajout..." : "Ajouter"}</button>
                 </div>
             </form>
         </div>

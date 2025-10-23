@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { getItem, updateItem } from "../api";
+import {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import {getItem, updateItem} from "../api";
 
 const TYPES = ["movie", "book", "game", "manga", "anime", "music"];
 
 export default function EditItemPage() {
-    const { id } = useParams();
+    const {id} = useParams();
     const nav = useNavigate();
     const [form, setForm] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -24,9 +24,9 @@ export default function EditItemPage() {
     if (!form) return <div>Chargement...</div>;
 
     const onChange = (e) => {
-        const { name, value, files } = e.target;
-        if (files) setForm((s) => ({ ...s, image: files[0] }));
-        else setForm((s) => ({ ...s, [name]: value }));
+        const {name, value, files} = e.target;
+        if (files) setForm((s) => ({...s, image: files[0]}));
+        else setForm((s) => ({...s, [name]: value}));
     };
 
     const onSubmit = async (e) => {
@@ -56,7 +56,7 @@ export default function EditItemPage() {
     const placeholder = "/no-image.jpg";
 
     return (
-        <div className="max-w-xl mx-auto">
+        <div className="rounded-box p-8 max-w-xl mx-auto bg-base-100 shadow">
             <h1 className="text-2xl font-semibold mb-4">Modifier l’item</h1>
 
             {error && <div className="alert alert-error mb-3">{error}</div>}
@@ -69,7 +69,7 @@ export default function EditItemPage() {
                         className="w-full h-48 object-cover rounded mb-2"
                     />
                     <input type="file" name="image" onChange={onChange}
-                           className="file-input file-input-bordered w-full" />
+                           className="file-input file-input-bordered w-full"/>
                 </div>
 
                 <input className="input input-bordered w-full" name="title" value={form.title} onChange={onChange}/>
@@ -77,11 +77,18 @@ export default function EditItemPage() {
                     {TYPES.map((t) => <option key={t}>{t}</option>)}
                 </select>
                 <input className="input input-bordered w-full" name="year" value={form.year || ""} onChange={onChange}/>
-                <input className="input input-bordered w-full" name="author" value={form.author || ""} onChange={onChange}/>
-                <textarea className="textarea textarea-bordered w-full" name="description" value={form.description || ""} onChange={onChange}/>
-                <input className="input input-bordered w-full" name="tags" value={form.tags} onChange={onChange} placeholder="tags séparés par virgule"/>
+                <input className="input input-bordered w-full" name="author" value={form.author || ""}
+                       onChange={onChange}/>
+                <textarea className="textarea textarea-bordered w-full" name="description"
+                          value={form.description || ""} onChange={onChange}/>
+                <input className="input input-bordered w-full" name="tags" value={form.tags} onChange={onChange}
+                       placeholder="tags séparés par virgule"/>
 
-                <button className={`btn btn-primary ${loading && "btn-disabled"}`}>{loading ? "Sauvegarde..." : "Enregistrer"}</button>
+                <div className="card-actions justify-end mt-4">
+                    <button
+                        className={`btn btn-primary ${loading && "btn-disabled"}`}>{loading ? "Sauvegarde..." : "Enregistrer"}
+                    </button>
+                </div>
             </form>
         </div>
     );

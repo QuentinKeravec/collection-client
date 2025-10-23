@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { useAuth } from '../store/auth';
 import { Link } from "react-router-dom";
+import FavoriteButton from "../components/FavoriteButton";
 
 export default function ItemsPage(){
     const [data,setData] = useState(null);
@@ -15,15 +16,9 @@ export default function ItemsPage(){
         api.get(`/items?${qs}`).then(res=>setData(res.data));
     }, [params]);
 
-    const toggleFavorite = async (id, favored) => {
-        if(!token) return alert('Connecte-toi');
-        if(!favored) await api.post(`/items/${id}/favorite`);
-        else await api.delete(`/items/${id}/favorite`);
-    };
-
     const placeholder = "/no-image.jpg";
 
-    if(!data) return <p>Chargement…</p>;
+    if(!data) return <span className="loading loading-bars loading-xl"></span>;
 
     return (
         <div>
@@ -44,6 +39,9 @@ export default function ItemsPage(){
                         <div className="card-body">
                             <h2 className="card-title">{it.title}</h2>
                             <p>{it.description}</p>
+                            <div className="card-actions justify-end">
+                                <FavoriteButton itemId={it.id} initial={it.is_favorite} />
+                            </div>
                         </div>
                     </Link>
                 ))}
