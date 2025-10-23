@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createItem } from "../api";
-
-const TYPES = ["movie","book","game","manga","anime","music"];
+import { api } from '../api';
+import SelectType from "../components/SelectType";
 
 export default function NewItemPage(){
     const nav = useNavigate();
@@ -13,44 +12,75 @@ export default function NewItemPage(){
         author: "",
         description: "",
         tags: "", // saisi "scifi, classic"
+        image: null,
     });
     const [loading, setLoading] = useState(false);
     const [error, setError]   = useState("");
+    const [type, setType] = useState("");
 
     const onChange = (e) => {
-        const { name, value } = e.target;
-        setForm(s => ({ ...s, [name]: value }));
+        const { name, value, files } = e.target;
+        if (files) setForm(s => ({ ...s, image: files[0] }));
+        else setForm(s => ({ ...s, [name]: value }));
     };
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        setError(""); setLoading(true);
+        setError("");
+        setLoading(true);
+
         try {
-            const payload = {
-                title: form.title.trim(),
-                type: form.type,
-                year: form.year ? Number(form.year) : null,
-                author: form.author || null,
-                description: form.description || null,
-                tags: form.tags
-                    ? form.tags.split(",").map(t => t.trim()).filter(Boolean)
-                    : [],
-            };
-            await createItem(payload);
-            nav("/items"); // retour à la liste
+            // Vérifier qu'on passe bien ici
+            console.log("[NewItem] submit start");
+
+            const data = new FormData();
+            data.append("title", form.title.trim());
+            data.append("type", type);
+            if (form.year) data.append("year", String(form.year));
+            if (form.author) data.append("author", form.author);
+            if (form.description) data.append("description", form.description);
+            if (form.image) data.append("image", form.image);
+
+            // tags: "scifi, classic" -> tags[]=scifi, tags[]=classic
+            form.tags
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean)
+                .forEach((t) => data.append("tags[]", t));
+
+            // Logge tout ce qu'on envoie
+            for (const [k, v] of data.entries()) {
+                console.log("[NewItem] formdata", k, v);
+            }
+
+            const res = await api.post("/items", data, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            console.log("[NewItem] success", res.status, res.data);
+            nav("/items"); // garde commenté le temps du debug
         } catch (err) {
-            const msg = err?.response?.data?.message
-                || (Array.isArray(err?.response?.data?.errors)
-                    ? err.response.data.errors.join(", ")
-                    : "Impossible d’ajouter l’item");
-            setError(msg);
+            // On logge TOUT
+            console.error("[NewItem] error", err?.response?.status, err?.response?.data, err);
+
+            // Affichage plus parlant
+            const server = err?.response?.data;
+            if (server?.errors) {
+                // transforme {field: [msg,...]} -> string lisible
+                const messages = Object.entries(server.errors)
+                    .map(([field, arr]) => `${field}: ${arr.join(", ")}`)
+                    .join(" | ");
+                setError(messages || server.message || "Erreur d’envoi");
+            } else {
+                setError(server?.message || JSON.stringify(server) || "Erreur d’envoi");
+            }
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="max-w-xl mx-auto">
+        <div className="rounded-box p-8 max-w-xl mx-auto bg-base-100 shadow">
             <h1 className="text-2xl font-semibold mb-4">Nouvel item</h1>
 
             {error && <div className="mb-3 p-3 rounded bg-red-100 text-red-700">{error}</div>}
@@ -68,17 +98,21 @@ export default function NewItemPage(){
                 </div>
 
                 <div>
-                    <label className="block text-sm mb-1">Type *</label>
-                    <select
-                        className="w-full border rounded px-3 py-2"
-                        name="type"
-                        value={form.type}
+                    <label className="block text-sm mb-1">Image</label>
+                    <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        className="file-input file-input-bordered w-full"
                         onChange={onChange}
-                        required
-                    >
-                        <option value="">— choisir —</option>
-                        {TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                    />
+                </div>
+
+                <div>
+                    <div>
+                        <label className="block text-sm mb-1">Type *</label>
+                        <SelectType value={type} onChange={setType} />
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -132,7 +166,7 @@ export default function NewItemPage(){
 
                 <div className="pt-2">
                     <button
-                        className={`px-4 py-2 rounded text-white ${loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"}`}
+                        className={`btn px-4 py-2 rounded text-white ${loading ? "bg-gray-400" : "bg-neutral"}`}
                         disabled={loading}
                     >
                         {loading ? "Ajout…" : "Ajouter"}

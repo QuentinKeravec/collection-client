@@ -1,2 +1,3 @@
+@import "./themes/mytheme.css";
 @import "tailwindcss";
 @plugin "daisyui";

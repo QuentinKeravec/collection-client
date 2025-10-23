@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { useAuth } from '../store/auth';
+import { Link } from "react-router-dom";
 
 export default function ItemsPage(){
     const [data,setData] = useState(null);
@@ -18,8 +19,9 @@ export default function ItemsPage(){
         if(!token) return alert('Connecte-toi');
         if(!favored) await api.post(`/items/${id}/favorite`);
         else await api.delete(`/items/${id}/favorite`);
-        // pas idéal mais rapide: recharger la page de favoris seulement
     };
+
+    const placeholder = "/no-image.jpg";
 
     if(!data) return <p>Chargement…</p>;
 
@@ -28,19 +30,22 @@ export default function ItemsPage(){
             <h1>Collection</h1>
             <Filters params={params} onChange={setParams} />
             <ul className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                {data.data.map(it=>(
-                    <li key={it.id} className="card bg-base-100 shadow">
+                {data.data.map((it) => (
+                    <Link key={it.id} to={`/items/${it.id}`} className="card bg-base-100 shadow hover:shadow-lg transition">
+
+                        <figure>
+                            <img
+                                src={it.image_url || placeholder}
+                                alt={it.title}
+                                className="w-full object-cover h-32"
+                            />
+                        </figure>
+
                         <div className="card-body">
-                            <h3 className="card-title">{it.title}</h3>
-                            <p className="opacity-70">{it.type}{it.year ? ` · ${it.year}` : ''}</p>
-                            {it.tags?.length ? <div className="flex gap-2 flex-wrap">
-                                {it.tags.map(tag => <span key={tag} className="badge badge-outline">{tag}</span>)}
-                            </div> : null}
-                            <div className="card-actions justify-end">
-                                <button className="btn btn-outline">❤️ Favori</button>
-                            </div>
+                            <h2 className="card-title">{it.title}</h2>
+                            <p>{it.description}</p>
                         </div>
-                    </li>
+                    </Link>
                 ))}
             </ul>
             <Pager meta={data.meta} onPage={p=>setParams(s=>({...s,page:p}))}/>
@@ -50,7 +55,7 @@ export default function ItemsPage(){
 
 function Filters({params,onChange}){
     return (
-        <div className="grid gap-3 md:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-4 mb-4">
             <select className="select select-bordered" value={params.type}
                     onChange={e=>onChange(s=>({...s,type:e.target.value,page:1}))}>
                 <option value="">Type (tous)</option>
