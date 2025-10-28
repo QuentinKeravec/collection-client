@@ -122,7 +122,7 @@ export default function NewItemPage(){
                             type="number"
                             min="1800"
                             max="2100"
-                            className="input input-bordered w-full px-3 py-2"
+                            className="input input-bordered w-full px-3 py-2 placeholder:text-gray-400"
                             name="year"
                             value={form.year}
                             onChange={onChange}
@@ -132,7 +132,7 @@ export default function NewItemPage(){
                     <div>
                         <label className="block text-sm mb-1">Auteur / Réalisateur</label>
                         <input
-                            className="input input-bordered w-full px-3 py-2"
+                            className="input input-bordered w-full px-3 py-2 placeholder:text-gray-400"
                             name="author"
                             value={form.author}
                             onChange={onChange}
@@ -144,7 +144,7 @@ export default function NewItemPage(){
                 <div>
                     <label className="block text-sm mb-1">Description</label>
                     <textarea
-                        className="textarea textarea-bordered w-full px-3 py-2"
+                        className="textarea textarea-bordered w-full px-3 py-2 placeholder:text-gray-400"
                         rows={4}
                         name="description"
                         value={form.description}
@@ -156,7 +156,7 @@ export default function NewItemPage(){
                 <div>
                     <label className="block text-sm mb-1">Tags (séparés par des virgules)</label>
                     <input
-                        className="input input-bordered w-full px-3 py-2"
+                        className="input input-bordered w-full px-3 py-2 placeholder:text-gray-400"
                         name="tags"
                         value={form.tags}
                         onChange={onChange}

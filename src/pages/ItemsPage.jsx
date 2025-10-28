@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
-import { useAuth } from '../store/auth';
 import { Link } from "react-router-dom";
 import FavoriteButton from "../components/FavoriteButton";
 
 export default function ItemsPage(){
     const [data,setData] = useState(null);
     const [params, setParams] = useState({ page:1, type:'', tag:'', search:'' });
-    const { token } = useAuth();
 
     useEffect(()=>{
         const qs = new URLSearchParams(Object.fromEntries(
@@ -18,7 +16,11 @@ export default function ItemsPage(){
 
     const placeholder = "/no-image.jpg";
 
-    if(!data) return <span className="loading loading-bars loading-xl"></span>;
+    if(!data) return (
+        <div className="flex justify-center items-center h-64">
+            <span className="loading loading-spinner loading-lg"></span>
+        </div>
+    );
 
     return (
         <div>

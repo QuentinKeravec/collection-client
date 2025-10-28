@@ -15,7 +15,11 @@ export default function ItemDetailPage() {
     }, [id]);
 
     if (error) return <div className="alert alert-error">{error}</div>;
-    if (!item) return <div className="text-center mt-10">Chargement...</div>;
+    if (!item) return (
+        <div className="flex justify-center items-center h-64">
+            <span className="loading loading-spinner loading-lg"></span>
+        </div>
+    );
 
     const placeholder = "/no-image.jpg";
 
